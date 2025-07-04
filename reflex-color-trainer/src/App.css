@@ -14,3 +14,8 @@ input {
   width: 80px;
   text-align: center;
 }
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}

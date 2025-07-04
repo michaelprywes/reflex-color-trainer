@@ -38,15 +38,20 @@ function App() {
     setColor("black");
   };
 
-  return (
+return (
   <div style={{
     backgroundColor: color,
-    width: '100vw',
-    height: '100vh',
-    margin: '0',
-    fontFamily: "'Roboto', sans-serif"
+    minHeight: '100vh',
+    width: '100%',
+    margin: 0,
+    padding: 0,
+    fontFamily: "'Roboto', sans-serif",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start'
   }}>
-    <h1>ReflexColorTrainer</h1>
+    <h1 style={{ color: '#fff' }}>ReflexColorTrainer</h1>
     <IntervalSettings
       minInterval={minInterval}
       maxInterval={maxInterval}
