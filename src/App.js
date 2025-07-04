@@ -3,18 +3,28 @@ import { FaBars } from 'react-icons/fa';
 import './App.css';
 
 function App() {
-  const [colors, setColors] = useState([
+  const allColors = [
     { value: 'red', name: 'Red' },
-    { value: 'blue', name: 'Blue' },
-    { value: 'green', name: 'Green' },
-    { value: 'yellow', name: 'Yellow' },
     { value: 'orange', name: 'Orange' },
-    { value: 'purple', name: 'Purple' }
+    { value: 'yellow', name: 'Yellow' },
+    { value: 'green', name: 'Green' },
+    { value: 'blue', name: 'Blue' },
+    { value: 'purple', name: 'Purple' },
+    { value: 'white', name: 'White' },
+    { value: 'black', name: 'Black' },
+  ];
+
+  const [selectedColors, setSelectedColors] = useState([
+    'Red',
+    'Yellow',
+    'Blue'
   ]);
 
   const [currentColor, setCurrentColor] = useState('black');
   const [currentNumber, setCurrentNumber] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [minNumber, setMinNumber] = useState(1);
+  const [maxNumber, setMaxNumber] = useState(10);
   const [minDuration, setMinDuration] = useState(1);
   const [maxDuration, setMaxDuration] = useState(3);
   const [announceNumber, setAnnounceNumber] = useState(true);
@@ -22,7 +32,9 @@ function App() {
 
   const timerRef = useRef(null);
 
-  const getRandomNumber = () => Math.floor(Math.random() * 10) + 1;
+  const getRandomNumber = () => {
+    return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+  };
 
   const getRandomInterval = () => {
     const min = minDuration * 1000;
@@ -36,13 +48,20 @@ function App() {
   };
 
   const changeColor = () => {
-    const index = Math.floor(Math.random() * colors.length);
-    const selected = colors[index];
+    const filteredColors = allColors.filter(c => selectedColors.includes(c.name));
+    if (filteredColors.length === 0) {
+      alert('Please select at least one color.');
+      stop();
+      return;
+    }
+
+    const index = Math.floor(Math.random() * filteredColors.length);
+    const selected = filteredColors[index];
     setCurrentColor(selected.value);
+
     const number = getRandomNumber();
     setCurrentNumber(number);
 
-    // Construct announcement
     let announcement = selected.name;
     if (announceNumber) {
       announcement += ` ${number}`;
@@ -67,30 +86,25 @@ function App() {
     setCurrentNumber(null);
   };
 
-  const addColor = () => {
-    const newColor = prompt('Enter color name or hex code:');
-    const newName = prompt('Enter display name for this color:');
-    if (newColor && newName) {
-      setColors([...colors, { value: newColor, name: newName }]);
+  const handleColorChange = (colorName) => {
+    if (selectedColors.includes(colorName)) {
+      setSelectedColors(selectedColors.filter(c => c !== colorName));
+    } else {
+      setSelectedColors([...selectedColors, colorName]);
     }
-  };
-
-  const removeColor = () => {
-    const colorToRemove = prompt('Enter display name of color to remove:');
-    setColors(colors.filter(c => c.name.toLowerCase() !== colorToRemove.toLowerCase()));
   };
 
   return (
     <div style={{
-  backgroundColor: currentColor,
-  width: '100vw',
-  height: '100vh',
-  fontFamily: "'Roboto', sans-serif",
-  color: 'white',
-  fontSize: '10rem',
-  textAlign: 'center',
-  position: 'relative'
-}}>
+      backgroundColor: currentColor,
+      width: '100vw',
+      height: '100vh',
+      fontFamily: "'Roboto', sans-serif",
+      color: 'white',
+      fontSize: '10rem',
+      textAlign: 'center',
+      position: 'relative'
+    }}>
       {/* Hamburger Menu */}
       <div style={{ position: 'absolute', top: 20, left: 20, fontSize: '2rem', cursor: 'pointer' }}
         onClick={() => setMenuOpen(!menuOpen)}>
@@ -107,8 +121,26 @@ function App() {
           padding: '10px',
           borderRadius: '5px',
           textAlign: 'left',
-          fontSize: '1rem'
+          fontSize: '1rem',
+          maxHeight: '80vh',
+          overflowY: 'auto'
         }}>
+          <div>
+            <label>Min Number: </label>
+            <input
+              type="number"
+              value={minNumber}
+              onChange={(e) => setMinNumber(parseInt(e.target.value))}
+            />
+          </div>
+          <div>
+            <label>Max Number: </label>
+            <input
+              type="number"
+              value={maxNumber}
+              onChange={(e) => setMaxNumber(parseInt(e.target.value))}
+            />
+          </div>
           <div>
             <label>Min Duration (s): </label>
             <input
@@ -138,9 +170,20 @@ function App() {
               /> Announce Number
             </label>
           </div>
+
           <div style={{ marginTop: '10px' }}>
-            <button onClick={addColor}>Add Color</button>
-            <button onClick={removeColor}>Remove Color</button>
+            <strong>Choose Colors:</strong>
+            {allColors.map((color) => (
+              <div key={color.name}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selectedColors.includes(color.name)}
+                    onChange={() => handleColorChange(color.name)}
+                  /> {color.name}
+                </label>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -160,7 +203,5 @@ function App() {
         </div>
       </div>
     </div>
-  );
-}
-
+);}
 export default App;
